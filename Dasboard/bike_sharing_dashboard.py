@@ -6,8 +6,8 @@ import seaborn as sns
 # Load data
 @st.cache_data
 def load_data():
-    day_data = pd.read_csv(r'C:\Users\diema\Documents\Assignmnet\archive\day.csv')   
-    hour_data = pd.read_csv(r'C:\Users\diema\Documents\Assignmnet\archive\hour.csv')
+    day_data = pd.read_csv('Data\day.csv')   
+    hour_data = pd.read_csv('Data\hour')
     
     # Convert date columns to datetime
     day_data['dteday'] = pd.to_datetime(day_data['dteday'])
