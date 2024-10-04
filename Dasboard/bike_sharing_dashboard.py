@@ -2,12 +2,20 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
+import os
+
+# Direktori data
+data_dir = "Data"
+
+# Nama file
+day_file = "day.csv"
+hour_file = "hour.csv"
 
 # Load data
 @st.cache_data
 def load_data():
-    day_data = pd.read_csv(r'C:\Users\diema\Documents\Assignmnet\archive\day.csv')   
-    hour_data = pd.read_csv(r'C:\Users\diema\Documents\Assignmnet\archive\hour.csv')
+    day_data = pd.read_csv(os.path.join(data_dir, day_file))
+    hour_data = pd.read_csv(os.path.join(data_dir, hour_file))
     
     # Convert date columns to datetime
     day_data['dteday'] = pd.to_datetime(day_data['dteday'])
