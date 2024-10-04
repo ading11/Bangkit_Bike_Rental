@@ -13,8 +13,8 @@ hour_file = "hour.csv"
 # Load data
 @st.cache_data
 def load_data():
-    day_data = pd.read_csv(os.path.join(data_dir, day_file)
-    hour_data = pd.read_csv(os.path.join(data_dir, hour_file)
+    day_data = pd.read_csv(os.path.join(data_dir, day_file))
+    hour_data = pd.read_csv(os.path.join(data_dir, hour_file))
     
     # Convert date columns to datetime
     day_data['dteday'] = pd.to_datetime(day_data['dteday'])
