@@ -14,4 +14,4 @@ Perhatikan kembali dataset path pada saat akan menjalankan dashboard.
 - streamlit hello 
 
 # Run Streamlit app
-streamlit run bike_sharing_dashboard.py
+streamlit run Dasboard/bike_sharing_dashboard.py
