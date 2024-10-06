@@ -80,29 +80,41 @@ This visualization shows how weather conditions affect bike rentals differently 
 st.header('Question 2: Seasonal and Yearly Trends: Casual vs Registered Users')
 yearly_seasonal = day_data.groupby(['yr', 'season'])[['casual', 'registered']].mean().reset_index()
 yearly_seasonal['yr'] = yearly_seasonal['yr'] + 2011  # Adjust year
+yearly_seasonal['year_season'] = yearly_seasonal['yr'].astype(str) + '_' + yearly_seasonal['season'].astype(str)
 
 fig, ax = plt.subplots(figsize=(14, 7))
 width = 0.35
 x = range(len(yearly_seasonal))
-ax.bar([i - width/2 for i in x], yearly_seasonal['casual'], width, label='Casual', color='#1f77b4')
-ax.bar([i + width/2 for i in x], yearly_seasonal['registered'], width, label='Registered', color='#ff7f0e')
 
+# Plot bars
+ax.bar(x, yearly_seasonal['casual'], width, label='Casual', color='#1f77b4')
+ax.bar(x, yearly_seasonal['registered'], width, bottom=yearly_seasonal['casual'], label='Registered', color='#ff7f0e')
+
+# Customize the plot
 ax.set_xlabel('Year and Season')
 ax.set_ylabel('Average Number of Rentals')
 ax.set_title('Seasonal and Yearly Trends: Casual vs Registered Users')
 ax.set_xticks(x)
-ax.set_xticklabels([f"{year}\n{season}" for year, season in zip(yearly_seasonal['yr'], yearly_seasonal['season'])], rotation=45)
+ax.set_xticklabels(yearly_seasonal['year_season'], rotation=45, ha='right')
 ax.legend()
+
+# Adjust y-axis to match the right-side image
+ax.set_ylim(0, 6000)
+
+# Add gridlines for better readability
+ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+plt.tight_layout()
 st.pyplot(fig)
 
 st.write("""
 This visualization shows the seasonal and yearly trends for casual vs registered users:
 1. Registered users consistently rent more bikes than casual users across all seasons and years.
-2. Both types of users show a pattern of higher rentals in warmer seasons like spring and summer.
+2. Both types of users show a pattern of higher rentals in warmer seasons like summer and fall.
 3. There's a general increase in rentals from 2011 to 2012 for both types of users.
 4. The difference between casual and registered users is most pronounced in peak seasons like summer and fall.
+5. Winter seasons show the lowest rental numbers for both user types.
 """)
-
 # Additional Analysis: Rentals by Day of Week
 st.header('Additional Analysis: Rentals by Day of Week')
 fig, ax = plt.subplots(figsize=(12, 6))
