@@ -30,7 +30,7 @@ def load_data():
 
 day_data, hour_data = load_data()
 
-# Dashboard title.
+# Dashboard title
 st.title('Bike Sharing Dashboard')
 
 # Sidebar
@@ -57,13 +57,15 @@ ax.set_ylabel('Number of Rentals')
 ax.set_title(f'Daily Bike Rentals in {year}')
 st.pyplot(fig)
 
-# Weather impact on working days vs holidays
+# Question 1: Weather impact on working days vs holidays
 st.header('Dampak Cuaca pada Hari Kerja VS Hari Libur')
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.barplot(x='weather_category', y='cnt', hue='workingday', data=filtered_day_data, ax=ax)
+sns.barplot(x='weather_category', y='cnt', hue='workingday', data=filtered_day_data,
+            palette={0: 'skyblue', 1: 'orange'},
+            errorbar=('ci', 95), errcolor='.2', capsize=0.1, ax=ax)
 ax.set_xlabel('Weather Condition')
 ax.set_ylabel('Average Number of Rentals')
-ax.set_title('Average Rentals by Weather and Working Day')
+ax.set_title('Weather Impact on Bike Rentals: Working Days vs Holidays')
 ax.legend(title='Working Day', labels=['Holiday', 'Working Day'])
 st.pyplot(fig)
 
@@ -74,7 +76,9 @@ Visualisasi ini menunjukan bagaimana kondisi cuaca mempengaruhi penyewaan sepeda
 3. Dampak cuaca buruk seperti (hujan/salju) lebih terasa dari pada hari libur. Dimana jumlah sepeda yang terdewa jauh lebih sedikit pada kondisi cuaca buruk daripada hari libur. 
 """)
 
-# Seasonal and yearly trends for casual vs registered users
+# Question 2: Seasonal and yearly trends for casual vs registered users
+
+# Persiapan data
 st.header('Trend Musim dan Tahunan: Pada pengguna Biasa VS Terdaftar')
 yearly_seasonal = day_data.groupby(['yr', 'season'])[['casual', 'registered']].mean().reset_index()
 yearly_seasonal['yr'] = yearly_seasonal['yr'] + 2011  # Adjust year
@@ -101,6 +105,7 @@ Visualisasi ini menampilkan trend musiman dan tahunan untuk pengguna biasa vs te
 4. Perbedaan antara pengguna biasa dan pengguna terdaftar paling menonjol di musim puncak seperti musim panas dan gugur. 
 """)
 
+
 # Correlation heatmap
 st.header('Correlation Heatmap')
 corr_columns = ['temp', 'atemp', 'hum', 'windspeed', 'casual', 'registered', 'cnt']
@@ -109,6 +114,15 @@ fig, ax = plt.subplots(figsize=(10, 8))
 sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
 ax.set_title('Correlation Heatmap of Numerical Variables')
 st.pyplot(fig)
+
+st.write("""
+Heat Map korelasi memberikan wawasan tentang hubungan antara berbagai variabel:
+
+1. Suhu (temp dan atemp) memiliki korelasi positif yang kuat dengan jumlah penyewaan.
+2. Kelembaban memiliki korelasi negatif sedang dengan penyewaan.
+3. Kecepatan angin memiliki korelasi negatif lemah dengan penyewaan.
+4. Pengguna terdaftar menunjukkan korelasi yang lebih kuat dengan total penyewaan (cnt) dibandingkan dengan pengguna kasual, menunjukkan bahwa mereka berkontribusi lebih banyak pada jumlah penyewaan secara keseluruhan.
+""")
 
 # Show raw data
 if st.checkbox('Show Raw Data'):
