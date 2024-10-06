@@ -58,7 +58,7 @@ ax.set_title(f'Daily Bike Rentals in {year}')
 st.pyplot(fig)
 
 # Question 1: Weather impact on working days vs holidays
-st.header('Question 1: Weather Impact on Working Days vs Holidays')
+st.header('Dampak Cuaca pada Hari Kerja VS Hari Libur')
 fig, ax = plt.subplots(figsize=(12, 6))
 sns.barplot(x='weather_category', y='cnt', hue='workingday', data=filtered_day_data,
             palette={0: 'skyblue', 1: 'orange'},
@@ -70,10 +70,10 @@ ax.legend(title='Working Day', labels=['Holiday', 'Working Day'])
 st.pyplot(fig)
 
 st.write("""
-This visualization shows how weather conditions affect bike rentals differently on working days vs holidays:
-1. Bike rentals are generally higher on working days across all weather conditions.
-2. Clear weather tends to have the highest number of bike rentals, followed by misty/cloudy conditions.
-3. The impact of bad weather (rain/snow) is more pronounced on working days, where the number of rentals drops more significantly compared to holidays.
+Visualisasi ini menunjukan bagaimana kondisi cuaca mempengaruhi penyewaan sepeda secara berbeda pada hari kerja vs hari libur:
+1. Sepeda yang tersewa umumnya lebih tinggi pada hari kerja di semua kondisi cuaca. 
+2. Cuaca cerah cenderung memiliki jumlah sewa sepeda tertinggi,, diikuti dengan kondisi seperti misty/berkabut.
+3. Dampak cuaca buruk seperti (hujan/salju) lebih terasa dari pada hari libur. Dimana jumlah sepeda yang terdewa jauh lebih sedikit pada kondisi cuaca buruk daripada hari libur. 
 """)
 
 # Question 2: Seasonal and yearly trends for casual vs registered users
