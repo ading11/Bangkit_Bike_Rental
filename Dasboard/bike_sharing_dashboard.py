@@ -77,53 +77,34 @@ This visualization shows how weather conditions affect bike rentals differently 
 """)
 
 # Question 2: Seasonal and yearly trends for casual vs registered users
+
 # Persiapan data
-daily_df['dteday'] = pd.to_datetime(daily_df['dteday'])
-daily_df['year'] = daily_df['dteday'].dt.year
-daily_df['season'] = daily_df['season'].map({1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'})
+st.header('Trend Musim dan Tahunan: Pada pengguna Biasa VS Terdaftar')
+yearly_seasonal = day_data.groupby(['yr', 'season'])[['casual', 'registered']].mean().reset_index()
+yearly_seasonal['yr'] = yearly_seasonal['yr'] + 2011  # Adjust year
 
-# Hitung rata-rata peminjaman per tahun dan musim
-avg_rentals = daily_df.groupby(['year', 'season'])[['casual', 'registered']].mean().reset_index()
-avg_rentals['year_season'] = avg_rentals['year'].astype(str) + '_' + avg_rentals['season']
-avg_rentals = avg_rentals.sort_values('year_season')
-
-# Buat visualisasi
 fig, ax = plt.subplots(figsize=(14, 7))
 width = 0.35
-x = range(len(avg_rentals))
+x = range(len(yearly_seasonal))
+ax.bar([i - width/2 for i in x], yearly_seasonal['casual'], width, label='Casual')
+ax.bar([i + width/2 for i in x], yearly_seasonal['registered'], width, label='Registered')
 
-# Plot batang
-ax.bar(x, avg_rentals['casual'], width, label='Casual', color='#1f77b4')
-ax.bar(x, avg_rentals['registered'], width, bottom=avg_rentals['casual'], label='Registered', color='#ff7f0e')
-
-# Kustomisasi plot
 ax.set_xlabel('Year and Season')
 ax.set_ylabel('Average Number of Rentals')
-ax.set_title('Seasonal and Yearly Trends: Casual vs Registered Users')
+ax.set_title('Average Rentals by Year and Season: Casual vs Registered Users')
 ax.set_xticks(x)
-ax.set_xticklabels(avg_rentals['year_season'], rotation=45, ha='right')
+ax.set_xticklabels([f"{year}\n{season}" for year, season in zip(yearly_seasonal['yr'], yearly_seasonal['season'])], rotation=45)
 ax.legend()
-
-# Sesuaikan y-axis untuk mencocokkan gambar sebelah kanan
-ax.set_ylim(0, 6000)
-
-# Tambahkan gridlines untuk keterbacaan yang lebih baik
-ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-plt.tight_layout()
-
-# Tampilkan plot di Streamlit
 st.pyplot(fig)
 
-# Tambahkan penjelasan
 st.write("""
-Visualisasi ini menunjukkan tren musiman dan tahunan untuk pengguna casual vs terdaftar:
-1. Pengguna terdaftar secara konsisten menyewa lebih banyak sepeda daripada pengguna casual di semua musim dan tahun.
-2. Kedua jenis pengguna menunjukkan pola peminjaman yang lebih tinggi pada musim yang lebih hangat seperti musim panas dan musim gugur.
-3. Terdapat peningkatan umum dalam peminjaman dari tahun 2011 ke 2012 untuk kedua jenis pengguna.
-4. Perbedaan antara pengguna casual dan terdaftar paling terlihat pada musim puncak seperti musim panas dan musim gugur.
-5. Musim dingin menunjukkan jumlah peminjaman terendah untuk kedua jenis pengguna.
+Visualisasi ini menampilkan trend musiman dan tahunan untuk pengguna biasa vs terdaftar : 
+1. Pengguna terdaftar secara konsisten menyewa lebih banyak sepeda daripada pengguna biasa di keseluruhan musim dan tahun. 
+2. Kedua jenis pengguna menunjukan pola dengan penyewaan sepeda lebih tinggi pada musim yang lebih hangat seperti musim semi dan panas. 
+3. Ada kenaikan umum dalam penyewaan dari tahun 2011 hingga 2012 untuk kedua jenis pengguna. 
+4. Perbedaan antara pengguna biasa dan pengguna terdaftar paling menonjol di musim puncak seperti musim panas dan gugur. 
 """)
+
 
 # Correlation heatmap
 st.header('Correlation Heatmap')
