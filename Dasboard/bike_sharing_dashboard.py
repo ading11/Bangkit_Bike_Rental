@@ -4,7 +4,31 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import os
 
-# [Previous data loading and preprocessing code remains the same]
+# Direktori data
+data_dir = "Data"
+
+# Nama file
+day_file = "day.csv"
+hour_file = "hour.csv"
+
+# Load data
+@st.cache_data
+def load_data():
+    day_data = pd.read_csv(os.path.join(data_dir, day_file))
+    hour_data = pd.read_csv(os.path.join(data_dir, hour_file))
+    
+    # Convert date columns to datetime
+    day_data['dteday'] = pd.to_datetime(day_data['dteday'])
+    hour_data['dteday'] = pd.to_datetime(hour_data['dteday'])
+    
+    # Create weather category
+    weather_map = {1: 'Clear', 2: 'Mist', 3: 'Light Snow/Rain', 4: 'Heavy Rain/Snow'}
+    day_data['weather_category'] = day_data['weathersit'].map(weather_map)
+    hour_data['weather_category'] = hour_data['weathersit'].map(weather_map)
+    
+    return day_data, hour_data
+
+day_data, hour_data = load_data()
 
 # Dashboard title
 st.title('Bike Sharing Dashboard')
