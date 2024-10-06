@@ -116,11 +116,12 @@ ax.set_title('Correlation Heatmap of Numerical Variables')
 st.pyplot(fig)
 
 st.write("""
-The correlation heatmap provides insights into the relationships between different variables:
-1. Temperature (temp and atemp) has a strong positive correlation with the number of rentals.
-2. Humidity has a moderate negative correlation with rentals.
-3. Wind speed has a weak negative correlation with rentals.
-4. Registered users show a stronger correlation with total rentals (cnt) compared to casual users, indicating they contribute more to overall rental numbers.
+Heat Map korelasi memberikan wawasan tentang hubungan antara berbagai variabel:
+
+1. Suhu (temp dan atemp) memiliki korelasi positif yang kuat dengan jumlah penyewaan.
+2. Kelembaban memiliki korelasi negatif sedang dengan penyewaan.
+3. Kecepatan angin memiliki korelasi negatif lemah dengan penyewaan.
+4. Pengguna terdaftar menunjukkan korelasi yang lebih kuat dengan total penyewaan (cnt) dibandingkan dengan pengguna kasual, menunjukkan bahwa mereka berkontribusi lebih banyak pada jumlah penyewaan secara keseluruhan.
 """)
 
 # Show raw data
