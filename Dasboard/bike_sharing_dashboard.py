@@ -77,59 +77,52 @@ This visualization shows how weather conditions affect bike rentals differently 
 """)
 
 # Question 2: Seasonal and yearly trends for casual vs registered users
-st.header('Question 2: Seasonal and Yearly Trends: Casual vs Registered Users')
-yearly_seasonal = day_data.groupby(['yr', 'season'])[['casual', 'registered']].mean().reset_index()
-yearly_seasonal['yr'] = yearly_seasonal['yr'] + 2011  # Adjust year
-yearly_seasonal['year_season'] = yearly_seasonal['yr'].astype(str) + '_' + yearly_seasonal['season'].astype(str)
+# Persiapan data
+daily_df['dteday'] = pd.to_datetime(daily_df['dteday'])
+daily_df['year'] = daily_df['dteday'].dt.year
+daily_df['season'] = daily_df['season'].map({1: 'Spring', 2: 'Summer', 3: 'Fall', 4: 'Winter'})
 
+# Hitung rata-rata peminjaman per tahun dan musim
+avg_rentals = daily_df.groupby(['year', 'season'])[['casual', 'registered']].mean().reset_index()
+avg_rentals['year_season'] = avg_rentals['year'].astype(str) + '_' + avg_rentals['season']
+avg_rentals = avg_rentals.sort_values('year_season')
+
+# Buat visualisasi
 fig, ax = plt.subplots(figsize=(14, 7))
 width = 0.35
-x = range(len(yearly_seasonal))
+x = range(len(avg_rentals))
 
-# Plot bars
-ax.bar(x, yearly_seasonal['casual'], width, label='Casual', color='#1f77b4')
-ax.bar(x, yearly_seasonal['registered'], width, bottom=yearly_seasonal['casual'], label='Registered', color='#ff7f0e')
+# Plot batang
+ax.bar(x, avg_rentals['casual'], width, label='Casual', color='#1f77b4')
+ax.bar(x, avg_rentals['registered'], width, bottom=avg_rentals['casual'], label='Registered', color='#ff7f0e')
 
-# Customize the plot
+# Kustomisasi plot
 ax.set_xlabel('Year and Season')
 ax.set_ylabel('Average Number of Rentals')
 ax.set_title('Seasonal and Yearly Trends: Casual vs Registered Users')
 ax.set_xticks(x)
-ax.set_xticklabels(yearly_seasonal['year_season'], rotation=45, ha='right')
+ax.set_xticklabels(avg_rentals['year_season'], rotation=45, ha='right')
 ax.legend()
 
-# Adjust y-axis to match the right-side image
+# Sesuaikan y-axis untuk mencocokkan gambar sebelah kanan
 ax.set_ylim(0, 6000)
 
-# Add gridlines for better readability
+# Tambahkan gridlines untuk keterbacaan yang lebih baik
 ax.grid(axis='y', linestyle='--', alpha=0.7)
 
 plt.tight_layout()
+
+# Tampilkan plot di Streamlit
 st.pyplot(fig)
 
+# Tambahkan penjelasan
 st.write("""
-This visualization shows the seasonal and yearly trends for casual vs registered users:
-1. Registered users consistently rent more bikes than casual users across all seasons and years.
-2. Both types of users show a pattern of higher rentals in warmer seasons like summer and fall.
-3. There's a general increase in rentals from 2011 to 2012 for both types of users.
-4. The difference between casual and registered users is most pronounced in peak seasons like summer and fall.
-5. Winter seasons show the lowest rental numbers for both user types.
-""")
-# Additional Analysis: Rentals by Day of Week
-st.header('Additional Analysis: Rentals by Day of Week')
-fig, ax = plt.subplots(figsize=(12, 6))
-day_data.groupby('weekday')[['casual', 'registered']].mean().plot(kind='bar', ax=ax)
-ax.set_title('Average Rentals by Day of Week')
-ax.set_xlabel('Day of Week (0 = Sunday, 6 = Saturday)')
-ax.set_ylabel('Average Number of Rentals')
-ax.legend(['Casual', 'Registered'])
-st.pyplot(fig)
-
-st.write("""
-This visualization shows the average rentals by day of the week for casual and registered users:
-1. Registered users show higher rental numbers on weekdays (1-5), with a drop on weekends.
-2. Casual users have higher rental numbers on weekends (0 and 6) compared to weekdays.
-3. This pattern suggests that registered users might be using bikes for commuting, while casual users are more likely to rent for leisure on weekends.
+Visualisasi ini menunjukkan tren musiman dan tahunan untuk pengguna casual vs terdaftar:
+1. Pengguna terdaftar secara konsisten menyewa lebih banyak sepeda daripada pengguna casual di semua musim dan tahun.
+2. Kedua jenis pengguna menunjukkan pola peminjaman yang lebih tinggi pada musim yang lebih hangat seperti musim panas dan musim gugur.
+3. Terdapat peningkatan umum dalam peminjaman dari tahun 2011 ke 2012 untuk kedua jenis pengguna.
+4. Perbedaan antara pengguna casual dan terdaftar paling terlihat pada musim puncak seperti musim panas dan musim gugur.
+5. Musim dingin menunjukkan jumlah peminjaman terendah untuk kedua jenis pengguna.
 """)
 
 # Correlation heatmap
