@@ -30,7 +30,7 @@ def load_data():
 
 day_data, hour_data = load_data()
 
-# Dashboard title.
+# Dashboard title
 st.title('Bike Sharing Dashboard')
 
 # Sidebar
@@ -41,74 +41,61 @@ season = st.sidebar.multiselect('Select Season', sorted(day_data['season'].uniqu
 # Filter data based on selection
 filtered_day_data = day_data[(day_data['yr'] == year - 2011) & (day_data['season'].isin(season))]
 
-# Overview metrics
-st.header('Overview')
-col1, col2, col3 = st.columns(3)
-col1.metric("Total Rentals", f"{filtered_day_data['cnt'].sum():,}")
-col2.metric("Average Daily Rentals", f"{filtered_day_data['cnt'].mean():.0f}")
-col3.metric("Max Daily Rentals", f"{filtered_day_data['cnt'].max():,}")
-
-# Daily rentals over time
-st.header('Daily Rentals Over Time')
-fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(filtered_day_data['dteday'], filtered_day_data['cnt'])
-ax.set_xlabel('Date')
-ax.set_ylabel('Number of Rentals')
-ax.set_title(f'Daily Bike Rentals in {year}')
-st.pyplot(fig)
-
-# Weather impact on working days vs holidays
-st.header('Dampak Cuaca pada Hari Kerja VS Hari Libur')
+# Pertanyaan Bisnis 1: Bagaimana faktor cuaca mempengaruhi jumlah peminjaman sepeda pada hari kerja vs hari libur?
+st.header('Pertanyaan 1: Dampak Cuaca pada Hari Kerja VS Hari Libur')
 fig, ax = plt.subplots(figsize=(12, 6))
-sns.barplot(x='weather_category', y='cnt', hue='workingday', data=filtered_day_data, ax=ax)
+sns.barplot(x='weather_category', y='cnt', hue='workingday', data=filtered_day_data,
+            palette={0: 'skyblue', 1: 'orange'},
+            errorbar=('ci', 95), errcolor='.2', capsize=0.1)
+ax.set_title('Faktor cuaca mempengaruhi jumlah peminjaman sepeda pada hari kerja vs hari libur')
 ax.set_xlabel('Weather Condition')
 ax.set_ylabel('Average Number of Rentals')
-ax.set_title('Average Rentals by Weather and Working Day')
 ax.legend(title='Working Day', labels=['Holiday', 'Working Day'])
 st.pyplot(fig)
 
 st.write("""
-Visualisasi ini menunjukan bagaimana kondisi cuaca mempengaruhi penyewaan sepeda secara berbeda pada hari kerja vs hari libur:
-1. Sepeda yang tersewa umumnya lebih tinggi pada hari kerja di semua kondisi cuaca. 
-2. Cuaca cerah cenderung memiliki jumlah sewa sepeda tertinggi,, diikuti dengan kondisi seperti misty/berkabut.
-3. Dampak cuaca buruk seperti (hujan/salju) lebih terasa dari pada hari libur. Dimana jumlah sepeda yang terdewa jauh lebih sedikit pada kondisi cuaca buruk daripada hari libur. 
+Insight:
+- Cuaca cerah menghasilkan jumlah peminjaman tertinggi, baik pada hari kerja maupun hari libur.
+- Peminjaman pada hari kerja konsisten lebih tinggi daripada hari libur di semua kondisi cuaca.
+- Perbedaan jumlah peminjaman antara hari kerja dan hari libur paling signifikan pada cuaca cerah.
 """)
 
-# Seasonal and yearly trends for casual vs registered users
-st.header('Trend Musim dan Tahunan: Pada pengguna Biasa VS Terdaftar')
-yearly_seasonal = day_data.groupby(['yr', 'season'])[['casual', 'registered']].mean().reset_index()
-yearly_seasonal['yr'] = yearly_seasonal['yr'] + 2011  # Adjust year
+# Pertanyaan Bisnis 2: Apakah ada pola musiman atau tren tahunan dalam peminjaman sepeda, dan bagaimana ini berbeda antara pengguna casual dan terdaftar?
+st.header('Pertanyaan 2: Trend Musim dan Tahunan: Pengguna Biasa VS Terdaftar')
 
+# Hitung rata-rata peminjaman per tahun dan musim
+avg_rentals = day_data.groupby(['yr', 'season'])[['casual', 'registered']].mean().reset_index()
+
+# Urutkan berdasarkan tahun dan musim
+avg_rentals['year'] = avg_rentals['yr'] + 2011
+avg_rentals['year_season'] = avg_rentals['year'].astype(str) + '_' + avg_rentals['season'].astype(str)
+avg_rentals = avg_rentals.sort_values('year_season')
+
+# Buat visualisasi
 fig, ax = plt.subplots(figsize=(14, 7))
 width = 0.35
-x = range(len(yearly_seasonal))
-ax.bar([i - width/2 for i in x], yearly_seasonal['casual'], width, label='Casual')
-ax.bar([i + width/2 for i in x], yearly_seasonal['registered'], width, label='Registered')
+x = range(len(avg_rentals))
+
+ax.bar([i - width/2 for i in x], avg_rentals['casual'], width, label='Casual', color='#1f77b4')
+ax.bar([i + width/2 for i in x], avg_rentals['registered'], width, label='Registered', color='#ff7f0e')
 
 ax.set_xlabel('Year and Season')
 ax.set_ylabel('Average Number of Rentals')
 ax.set_title('Average Rentals by Year and Season: Casual vs Registered Users')
 ax.set_xticks(x)
-ax.set_xticklabels([f"{year}\n{season}" for year, season in zip(yearly_seasonal['yr'], yearly_seasonal['season'])], rotation=45)
+ax.set_xticklabels(avg_rentals['year_season'], rotation=45, ha='right')
 ax.legend()
+
+plt.tight_layout()
 st.pyplot(fig)
 
 st.write("""
-Visualisasi ini menampilkan trend musiman dan tahunan untuk pengguna biasa vs terdaftar : 
-1. Pengguna terdaftar secara konsisten menyewa lebih banyak sepeda daripada pengguna biasa di keseluruhan musim dan tahun. 
-2. Kedua jenis pengguna menunjukan pola dengan penyewaan sepeda lebih tinggi pada musim yang lebih hangat seperti musim semi dan panas. 
-3. Ada kenaikan umum dalam penyewaan dari tahun 2011 hingga 2012 untuk kedua jenis pengguna. 
-4. Perbedaan antara pengguna biasa dan pengguna terdaftar paling menonjol di musim puncak seperti musim panas dan gugur. 
+Insight:
+- Terdapat pola musiman yang jelas dalam penggunaan sepeda, dengan puncak di musim panas dan penurunan di musim dingin.
+- Pengguna terdaftar menunjukkan penggunaan yang lebih tinggi dan stabil sepanjang tahun dibandingkan pengguna casual.
+- Pengguna casual lebih sensitif terhadap perubahan musim, dengan peningkatan signifikan pada musim panas.
+- Tren tahunan menunjukkan peningkatan jumlah peminjaman dari tahun ke tahun, terutama untuk pengguna terdaftar.
 """)
-
-# Correlation heatmap
-st.header('Correlation Heatmap')
-corr_columns = ['temp', 'atemp', 'hum', 'windspeed', 'casual', 'registered', 'cnt']
-corr_matrix = filtered_day_data[corr_columns].corr()
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', ax=ax)
-ax.set_title('Correlation Heatmap of Numerical Variables')
-st.pyplot(fig)
 
 # Show raw data
 if st.checkbox('Show Raw Data'):
